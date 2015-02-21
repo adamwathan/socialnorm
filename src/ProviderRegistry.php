@@ -1,13 +1,12 @@
-<?php namespace AdamWathan\EloquentOAuth;
+<?php namespace SocialNorm;
 
-use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
-use AdamWathan\EloquentOAuth\Exceptions\ProviderNotRegisteredException;
+use SocialNorm\Exceptions\ProviderNotRegisteredException;
 
 class ProviderRegistrar
 {
     private $providers = [];
 
-    public function registerProvider($alias, ProviderInterface $provider)
+    public function registerProvider($alias, Provider $provider)
     {
         $this->providers[$alias] = $provider;
     }

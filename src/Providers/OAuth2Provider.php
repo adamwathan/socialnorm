@@ -1,20 +1,21 @@
-<?php namespace AdamWathan\EloquentOAuth\Providers;
+<?php namespace SocialNorm\Providers;
 
-use AdamWathan\EloquentOAuth\ProviderUserDetails as UserDetails;
-use AdamWathan\EloquentOAuth\Exceptions\ApplicationRejectedException;
-use AdamWathan\EloquentOAuth\Exceptions\InvalidAuthorizationCodeException;
-use Illuminate\Http\Request as Input;
+use SocialNorm\Exceptions\ApplicationRejectedException;
+use SocialNorm\Exceptions\InvalidAuthorizationCodeException;
+use SocialNorm\Provider;
+use SocialNorm\User;
+
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\BadResponseException;
 
-abstract class Provider implements ProviderInterface
+abstract class OAuth2Provider implements Provider
 {
     protected $httpClient;
-    protected $input;
+    protected $request;
     protected $clientId;
     protected $clientSecret;
     protected $redirectUri;
-    protected $scope = [];
+    protected $scopes = [];
 
     protected $headers = [
         'authorize' => [],
@@ -25,15 +26,15 @@ abstract class Provider implements ProviderInterface
     protected $accessToken;
     protected $providerUserData;
 
-    public function __construct($config, HttpClient $httpClient, Input $input)
+    public function __construct($config, HttpClient $httpClient, $request)
     {
         $this->httpClient = $httpClient;
-        $this->input = $input;
-        $this->clientId = $config['id'];
-        $this->clientSecret = $config['secret'];
-        $this->redirectUri = $config['redirect'];
+        $this->request = $request;
+        $this->clientId = $config['client_id'];
+        $this->clientSecret = $config['client_secret'];
+        $this->redirectUri = $config['redirect_uri'];
         if (isset($config['scope'])) {
-            $this->scope = array_merge($this->scope, $config['scope']);
+            $this->scopes = array_merge($this->scopes, $config['scopes']);
         }
     }
 
@@ -61,21 +62,20 @@ abstract class Provider implements ProviderInterface
 
     protected function compileScopes()
     {
-        return implode(',', $this->scope);
+        return implode(',', $this->scopes);
     }
 
-    public function getUserDetails()
+    public function getUser()
     {
         $this->accessToken = $this->requestAccessToken();
         $this->providerUserData = $this->requestUserData();
-        return new UserDetails([
-            'accessToken' => $this->accessToken,
-            'userId' => $this->userId(),
+        return new User([
+            'access_token' => $this->accessToken,
+            'id' => $this->userId(),
             'nickname' => $this->nickname(),
-            'firstName' => $this->firstName(),
-            'lastName' => $this->lastName(),
+            'full_name' => $this->fullName(),
             'email' => $this->email(),
-            'imageUrl' => $this->imageUrl(),
+            'avatar' => $this->avatar(),
         ], $this->providerUserData);
     }
 
@@ -127,10 +127,10 @@ abstract class Provider implements ProviderInterface
 
     protected function getAuthorizationCode()
     {
-        if (! $this->input->has('code')) {
+        if (! isset($this->request['code'])) {
             throw new ApplicationRejectedException;
         }
-        return $this->input->get('code');
+        return $this->request['code'];
     }
 
     protected function parseJsonTokenResponse($response)
@@ -151,8 +151,7 @@ abstract class Provider implements ProviderInterface
 
     abstract protected function userId();
     abstract protected function nickname();
-    abstract protected function firstName();
-    abstract protected function lastName();
+    abstract protected function fullName();
     abstract protected function email();
-    abstract protected function imageUrl();
+    abstract protected function avatar();
 }

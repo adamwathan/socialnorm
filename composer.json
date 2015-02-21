@@ -1,6 +1,6 @@
 {
-    "name": "adamwathan/eloquent-oauth",
-    "description": "Stupid simple OAuth authentication with Laravel and Eloquent",
+    "name": "socialnorm/socialnorm",
+    "description": "Normalize user details between various OAuth providers",
     "authors": [
     {
         "name": "Adam Wathan",
@@ -10,10 +10,6 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4.0",
-        "illuminate/auth": "5.0.*",
-        "illuminate/session": "5.0.*",
-        "illuminate/database": "5.0.*",
-        "illuminate/support": "5.0.*",
         "guzzlehttp/guzzle": "~5.0"
     },
     "require-dev": {
@@ -21,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AdamWathan\\EloquentOAuth\\": "src/"
+            "SocialNorm\\": "src/"
         },
         "classmap": [
             "tests/FunctionalTestCase.php"

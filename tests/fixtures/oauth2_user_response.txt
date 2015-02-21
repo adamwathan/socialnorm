@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Server: example.com
+Date: Sat, 21 Feb 2015 18:43:17 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 1278
+Status: 200 OK
+
+{
+  "login": "adamwathan",
+  "id": 4323180,
+  "avatar_url": "https://avatars.example.com/4323180",
+  "name": "Adam Wathan",
+  "email": "adam@example.com"
+}

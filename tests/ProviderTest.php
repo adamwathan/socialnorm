@@ -1,92 +1,51 @@
 <?php
 
 use Mockery as M;
-use AdamWathan\EloquentOAuth\OAuthManager;
-use AdamWathan\EloquentOAuth\Providers\Provider as AbstractProvider;
+use SocialNorm\OAuthManager;
+use SocialNorm\Providers\OAuth2Provider;
+
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Subscriber\Mock as SubscriberMock;
 
 class ProviderTest extends PHPUnit_Framework_TestCase
 {
-    public function tearDown()
+    private function getStubbedHttpClient($responses = [])
     {
-        M::close();
+        $client = new HttpClient;
+        $mockSubscriber = new SubscriberMock($responses);
+        $client->getEmitter()->attach($mockSubscriber);
+        return $client;
     }
 
-    public function test_can_get_authorize_url()
+    /** @test */
+    public function it_can_retrieve_a_normalized_user()
     {
-        $redirectUri = 'http://myapp.dev/provider/login';
-        $config = array(
-            'id' => '1',
-            'secret' => 'foobar',
-            'redirect' => $redirectUri,
-            );
-        $httpClient = M::mock('GuzzleHttp\\Client')->shouldIgnoreMissing();
-        $input = M::mock('Illuminate\\Http\\Request')->shouldIgnoreMissing();
+        $client = $this->getStubbedHttpClient([
+            __DIR__ . '/fixtures/oauth2_accesstoken_response.txt',
+            __DIR__ . '/fixtures/oauth2_user_response.txt',
+        ]);
 
-        $provider = new Provider($config, $httpClient, $input);
+        $provider = new GenericProvider([
+            'client_id' => 'abcdefgh',
+            'client_secret' => '12345678',
+            'redirect_uri' => 'http://example.com/login',
+        ], $client, ['code' => 'abc123']);
 
-        $state = 'baz';
-        $expected = 'http://example.com/authorize?client_id=1&scope=email&redirect_uri=http://myapp.dev/provider/login&response_type=code&state='.$state;
-        $result = $provider->authorizeUrl($state);
-        $this->assertEquals($expected, $result);
-    }
+        $user = $provider->getUser();
 
-    public function test_can_get_user_details()
-    {
-        $redirectUri = 'http://myapp.dev/provider/login';
-        $config = array(
-            'id' => '1',
-            'secret' => 'foobar',
-            'redirect' => $redirectUri,
-            );
-        $httpClient = M::mock('GuzzleHttp\\Client')->shouldIgnoreMissing();
-        $input = M::mock('Illuminate\\Http\\Request')->shouldIgnoreMissing();
-
-        $provider = new Provider($config, $httpClient, $input);
-
-        $httpClient->shouldReceive('post->getBody')->andReturn('abc123');
-        $httpClient->shouldReceive('get->getBody')->andReturn('{"user_id":"1","nick_name":"john.doe","first_name":"John","last_name":"Doe","email":"john.doe@example.com","photo":"http:\/\/example.com\/photos\/john_doe.jpg"}');
-        $input->shouldReceive('has')->andReturn(true);
-        $input->shouldReceive('get')->andReturn('authorization-code');
-
-        $details = $provider->getUserDetails();
-        $this->assertInstanceOf('AdamWathan\\EloquentOAuth\\ProviderUserDetails', $details);
-        $this->assertEquals('abc123', $details->accessToken);
-        $this->assertEquals('john.doe', $details->nickname);
-        $this->assertEquals('John', $details->firstName);
-        $this->assertEquals('Doe', $details->lastName);
-        $this->assertEquals('john.doe@example.com', $details->email);
-        $this->assertEquals('http://example.com/photos/john_doe.jpg', $details->imageUrl);
-    }
-
-    /**
-     * @expectedException AdamWathan\EloquentOAuth\Exceptions\ApplicationRejectedException
-     */
-    public function test_get_user_details_throws_exception_if_user_rejects_application()
-    {
-        $redirectUri = 'http://myapp.dev/provider/login';
-        $config = array(
-            'id' => '1',
-            'secret' => 'foobar',
-            'redirect' => $redirectUri,
-            );
-        $httpClient = M::mock('GuzzleHttp\\Client')->shouldIgnoreMissing();
-        $input = M::mock('Illuminate\\Http\\Request')->shouldIgnoreMissing();
-
-        $provider = new Provider($config, $httpClient, $input);
-
-        $httpClient->shouldReceive('post->getBody')->andReturn('abc123');
-        $httpClient->shouldReceive('get->getBody')->andReturn('{"user_id":"1","nick_name":"john.doe","first_name":"John","last_name":"Doe","email":"john.doe@example.com","photo":"http:\/\/example.com\/photos\/john_doe.jpg"}');
-        $input->shouldReceive('has')->andReturn(false);
-
-        $details = $provider->getUserDetails();
+        $this->assertEquals('4323180', $user->id);
+        $this->assertEquals('adamwathan', $user->nickname);
+        $this->assertEquals('Adam Wathan', $user->full_name);
+        $this->assertEquals('adam@example.com', $user->email);
+        $this->assertEquals('https://avatars.example.com/4323180', $user->avatar);
+        $this->assertEquals('abcdefgh12345678', $user->access_token);
     }
 }
 
-class Provider extends AbstractProvider
+class GenericProvider extends OAuth2Provider
 {
-    protected $scope = array(
-        'email',
-        );
+    protected $scope = [ 'email' ];
+
     protected function getAuthorizeUrl()
     {
         return 'http://example.com/authorize';
@@ -104,7 +63,7 @@ class Provider extends AbstractProvider
 
     protected function parseTokenResponse($response)
     {
-        return $response;
+        return $this->parseJsonTokenResponse($response);
     }
 
     protected function parseUserDataResponse($response)
@@ -114,22 +73,17 @@ class Provider extends AbstractProvider
 
     protected function userId()
     {
-        return $this->getProviderUserData('user_id');
+        return $this->getProviderUserData('id');
     }
 
     protected function nickname()
     {
-        return $this->getProviderUserData('nick_name');
+        return $this->getProviderUserData('login');
     }
 
-    protected function firstName()
+    protected function fullName()
     {
-        return $this->getProviderUserData('first_name');
-    }
-
-    protected function lastName()
-    {
-        return $this->getProviderUserData('last_name');
+        return $this->getProviderUserData('name');
     }
 
     protected function email()
@@ -137,8 +91,8 @@ class Provider extends AbstractProvider
         return $this->getProviderUserData('email');
     }
 
-    protected function imageUrl()
+    protected function avatar()
     {
-        return $this->getProviderUserData('photo');
+        return $this->getProviderUserData('avatar_url');
     }
 }
