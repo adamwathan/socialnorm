@@ -7,7 +7,7 @@ use SocialNorm\Providers\OAuth2Provider;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Subscriber\Mock as SubscriberMock;
 
-class ProviderTest extends PHPUnit_Framework_TestCase
+class ProviderTest extends TestCase
 {
     private function getStubbedHttpClient($responses = [])
     {

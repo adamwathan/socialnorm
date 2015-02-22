@@ -2,7 +2,7 @@
 
 use SocialNorm\User;
 
-class UserTest extends PHPUnit_Framework_TestCase
+class UserTest extends TestCase
 {
     /** @test */
     public function it_can_set_all_properties_and_retrieve()

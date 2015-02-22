@@ -18,9 +18,11 @@
     "autoload": {
         "psr-4": {
             "SocialNorm\\": "src/"
-        },
-        "classmap": [
-            "tests/FunctionalTestCase.php"
+        }
+    },
+    "autoload-dev": {
+        "files": [
+            "tests/TestCase.php"
         ]
     }
 }
