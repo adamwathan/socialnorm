@@ -11,12 +11,12 @@ class SocialNormTest extends TestCase
     /** @test */
     public function it_can_retrieve_authorize_urls_for_providers()
     {
-        $authorizeUrl = 'http://example.com/authorize';
-        $provider = new ProviderStub($authorizeUrl, M::mock('SocialNorm\User'));
-
         $providerRegistry = new ProviderRegistry;
         $stateManager = M::mock('SocialNorm\State\StateManager');
         $stateManager->shouldReceive('generateState')->andReturn('stubbed-state');
+
+        $authorizeUrl = 'http://example.com/authorize';
+        $provider = new ProviderStub($authorizeUrl, M::mock('SocialNorm\User'));
 
         $socialNorm = new SocialNorm($providerRegistry, $stateManager);
         $socialNorm->registerProvider('foo', $provider);
@@ -27,13 +27,13 @@ class SocialNormTest extends TestCase
     /** @test */
     public function it_can_retrieve_users_when_state_is_verified()
     {
-        $authorizeUrl = 'http://example.com/authorize';
-        $user = M::mock('SocialNorm\User');
-        $provider = new ProviderStub($authorizeUrl, $user);
-
         $providerRegistry = new ProviderRegistry;
         $stateManager = M::mock('SocialNorm\State\StateManager');
         $stateManager->shouldReceive('verifyState')->andReturn(true);
+
+        $authorizeUrl = 'http://example.com/authorize';
+        $user = M::mock('SocialNorm\User');
+        $provider = new ProviderStub($authorizeUrl, $user);
 
         $socialNorm = new SocialNorm($providerRegistry, $stateManager);
         $socialNorm->registerProvider('foo', $provider);
@@ -47,13 +47,13 @@ class SocialNormTest extends TestCase
      */
     public function it_throws_if_the_state_cant_be_verified()
     {
-        $authorizeUrl = 'http://example.com/authorize';
-        $user = M::mock('SocialNorm\User');
-        $provider = new ProviderStub($authorizeUrl, $user);
-
         $providerRegistry = new ProviderRegistry;
         $stateManager = M::mock('SocialNorm\State\StateManager');
         $stateManager->shouldReceive('verifyState')->andReturn(false);
+
+        $authorizeUrl = 'http://example.com/authorize';
+        $user = M::mock('SocialNorm\User');
+        $provider = new ProviderStub($authorizeUrl, $user);
 
         $socialNorm = new SocialNorm($providerRegistry, $stateManager);
         $socialNorm->registerProvider('foo', $provider);

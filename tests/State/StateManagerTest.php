@@ -3,13 +3,8 @@
 use Mockery as M;
 use SocialNorm\State\StateManager;
 
-class StateManagerTest extends PHPUnit_Framework_TestCase
+class StateManagerTest extends TestCase
 {
-    public function tearDown()
-    {
-        M::close();
-    }
-
     /** @test */
     public function it_generates_random_state()
     {
