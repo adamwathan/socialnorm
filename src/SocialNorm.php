@@ -2,16 +2,17 @@
 
 use SocialNorm\Exceptions\ProviderNotRegisteredException;
 use SocialNorm\Exceptions\InvalidAuthorizationCodeException;
+use SocialNorm\State\StateManager;
 
 class SocialNorm
 {
-    protected $stateManager;
     protected $providers;
+    protected $stateManager;
 
-    public function __construct(StateManager $stateManager, ProviderRegistry $providers)
+    public function __construct(ProviderRegistry $providers, StateManager $stateManager)
     {
-        $this->stateManager = $stateManager;
         $this->providers = $providers;
+        $this->stateManager = $stateManager;
     }
 
     public function registerProvider($alias, Provider $provider)
@@ -30,7 +31,7 @@ class SocialNorm
         if (! $this->stateManager->verifyState()) {
             throw new InvalidAuthorizationCodeException;
         }
-        return $this->getProvider($providerAlias)->getUserDetails();
+        return $this->getProvider($providerAlias)->getUser();
     }
 
     protected function getProvider($providerAlias)
