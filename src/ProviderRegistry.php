@@ -2,7 +2,7 @@
 
 use SocialNorm\Exceptions\ProviderNotRegisteredException;
 
-class ProviderRegistrar
+class ProviderRegistry
 {
     private $providers = [];
 

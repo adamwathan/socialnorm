@@ -1,3 +1,3 @@
-<?php namespace AdamWathan\EloquentOAuth\Exceptions;
+<?php namespace SocialNorm\Exceptions;
 
 class ProviderNotRegisteredException extends \RuntimeException {}
