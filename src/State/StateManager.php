@@ -12,7 +12,7 @@ class StateManager
         $this->request = $request;
         $this->generateRandomString = $generateRandomString ?: function () {
             $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            return substr(str_shuffle(str_repeat($pool, $length)), 0, $length);
+            return str_shuffle(str_repeat($pool, 16));
         };
     }
 

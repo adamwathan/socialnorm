@@ -11,6 +11,27 @@ class StateManagerTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test */
+    public function it_generates_random_state()
+    {
+        $session = M::mock('SocialNorm\State\Session')->shouldIgnoreMissing();
+        $stateManager = new StateManager($session, ['state' => 'not-important']);
+
+        $firstState = $stateManager->generateState();
+        $secondState = $stateManager->generateState();
+        $this->assertFalse($firstState == $secondState);
+    }
+
+    /** @test */
+    public function it_persists_the_state_to_the_session()
+    {
+        $session = M::spy('SocialNorm\State\Session');
+        $stateManager = new StateManager($session, []);
+
+        $stateManager->generateState();
+        $session->shouldHaveReceived('put');
+    }
+
+    /** @test */
     public function it_can_verify_valid_state()
     {
         $state = 'valid-state';
