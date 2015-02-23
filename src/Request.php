@@ -2,7 +2,7 @@
 
 use SocialNorm\Exceptions\ApplicationRejectedException;
 
-class Request
+final class Request
 {
     private $queryParams;
 
@@ -11,8 +11,14 @@ class Request
         $this->queryParams = $queryParams;
     }
 
-    /** @todo */
-    public static function createFromGlobals() {}
+    /**
+     * Optional helper constructor to reduce setup
+     * for people who don't really care.
+     */
+    public static function createFromGlobals()
+    {
+        return new self($_REQUEST);
+    }
 
     public function verifyState($state)
     {
