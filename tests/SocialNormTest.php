@@ -59,6 +59,44 @@ class SocialNormTest extends TestCase
         $socialNorm->registerProvider('foo', $provider);
         $socialNorm->getUser('foo');
     }
+
+    // Just for reference.. Still thinking about this design as well as adding
+    // an integration test like this.
+    public function it_works()
+    {
+        $authorizeUrl = 'http://example.com/authorize';
+        $user = M::mock('SocialNorm\User');
+        $provider = new ProviderStub($authorizeUrl, $user);
+
+        $session = new InMemorySession;
+
+        // Simulate first request
+        $socialNorm = new SocialNorm(
+            new ProviderRegistry,
+            $session,
+            new Request([]),
+            new StateGenerator
+        );
+
+        $socialNorm->registerProvider('foo', $provider);
+        $returnedUrl = $socialNorm->authorize('foo');
+
+        $this->assertEquals($authorizeUrl, $returnedUrl);
+
+        // Simulate second request
+        $state = $session->get('oauth.state');
+
+        $socialNorm = new SocialNorm(
+            new ProviderRegistry,
+            $session,
+            new Request(['state' => $state]),
+            new StateGenerator
+        );
+
+        $returnedUser = $socialNorm->getUser('foo');
+
+        $this->assertEquals($user, $returnedUser);
+    }
 }
 
 class ProviderStub implements Provider
