@@ -4,39 +4,24 @@ class StateManager
 {
     protected $session;
     protected $request;
-    protected $generateRandomString;
+    protected $stateGenerator;
 
-    public function __construct(Session $session, $request, Closure $generateRandomString = null)
+    public function __construct(Session $session, Request $request, StateGenerator $stateGenerator)
     {
         $this->session = $session;
         $this->request = $request;
-        $this->generateRandomString = $generateRandomString ?: function () {
-            $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            return str_shuffle(str_repeat($pool, 16));
-        };
+        $this->stateGenerator = $stateGenerator;
     }
 
     public function generateState()
     {
-        $this->store($state = $this->generateRandomString->__invoke());
-        return $state;
-    }
-
-    protected function store($state)
-    {
+        $state = $this->stateGenerator->generate();
         $this->session->put('oauth.state', $state);
+        return $state;
     }
 
     public function verifyState()
     {
-        if (! isset($this->request['state'])) {
-            return false;
-        }
-        return $this->request['state'] === $this->retrieveState();
-    }
-
-    protected function retrieveState()
-    {
-        return $this->session->get('oauth.state');
+        return $this->request->verifyState($this->session->get('oauth.state'));
     }
 }
