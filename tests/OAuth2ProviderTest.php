@@ -40,6 +40,26 @@ class ProviderTest extends TestCase
         $this->assertEquals('https://avatars.example.com/4323180', $user->avatar);
         $this->assertEquals('abcdefgh12345678', $user->access_token);
     }
+
+    /**
+     * @test
+     * @expectedException SocialNorm\Exceptions\ApplicationRejectedException
+     */
+    public function it_fails_to_retrieve_a_user_when_the_authorization_code_is_omitted()
+    {
+        $client = $this->getStubbedHttpClient([
+            __DIR__ . '/fixtures/oauth2_accesstoken_response.txt',
+            __DIR__ . '/fixtures/oauth2_user_response.txt',
+        ]);
+
+        $provider = new GenericProvider([
+            'client_id' => 'abcdefgh',
+            'client_secret' => '12345678',
+            'redirect_uri' => 'http://example.com/login',
+        ], $client, []);
+
+        $user = $provider->getUser();
+    }
 }
 
 class GenericProvider extends OAuth2Provider
