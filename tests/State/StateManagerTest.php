@@ -2,7 +2,7 @@
 
 use Mockery as M;
 use SocialNorm\State\StateManager;
-use SocialNorm\State\Request;
+use SocialNorm\Request;
 use SocialNorm\State\StateGenerator;
 
 class StateManagerTest extends TestCase

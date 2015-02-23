@@ -1,5 +1,7 @@
 <?php namespace SocialNorm\State;
 
+use SocialNorm\Request;
+
 class StateManager
 {
     protected $session;
