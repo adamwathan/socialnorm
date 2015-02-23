@@ -1,6 +1,5 @@
 <?php namespace SocialNorm;
 
-use SocialNorm\Exceptions\ProviderNotRegisteredException;
 use SocialNorm\Exceptions\InvalidAuthorizationCodeException;
 use SocialNorm\State\StateManager;
 
