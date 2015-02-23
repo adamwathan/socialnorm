@@ -2,12 +2,13 @@
 
 use Mockery as M;
 use SocialNorm\OAuthManager;
+use SocialNorm\Request;
 use SocialNorm\Providers\OAuth2Provider;
 
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Subscriber\Mock as SubscriberMock;
 
-class ProviderTest extends TestCase
+class OAuth2ProviderTest extends TestCase
 {
     private function getStubbedHttpClient($responses = [])
     {
@@ -29,7 +30,7 @@ class ProviderTest extends TestCase
             'client_id' => 'abcdefgh',
             'client_secret' => '12345678',
             'redirect_uri' => 'http://example.com/login',
-        ], $client, ['code' => 'abc123']);
+        ], $client, new Request(['code' => 'abc123']));
 
         $user = $provider->getUser();
 
@@ -56,7 +57,7 @@ class ProviderTest extends TestCase
             'client_id' => 'abcdefgh',
             'client_secret' => '12345678',
             'redirect_uri' => 'http://example.com/login',
-        ], $client, []);
+        ], $client, new Request([]));
 
         $user = $provider->getUser();
     }

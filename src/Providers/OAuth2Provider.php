@@ -3,6 +3,7 @@
 use SocialNorm\Exceptions\ApplicationRejectedException;
 use SocialNorm\Exceptions\InvalidAuthorizationCodeException;
 use SocialNorm\Provider;
+use SocialNorm\Request;
 use SocialNorm\User;
 
 use GuzzleHttp\Client as HttpClient;
@@ -26,7 +27,7 @@ abstract class OAuth2Provider implements Provider
     protected $accessToken;
     protected $providerUserData;
 
-    public function __construct($config, HttpClient $httpClient, $request)
+    public function __construct($config, HttpClient $httpClient, Request $request)
     {
         $this->httpClient = $httpClient;
         $this->request = $request;
@@ -110,7 +111,7 @@ abstract class OAuth2Provider implements Provider
 
     protected function buildAccessTokenPostBody()
     {
-        $body = "code=".$this->getAuthorizationCode();
+        $body = "code=".$this->request->authorizationCode();
         $body .= "&client_id=".$this->clientId;
         $body .= "&client_secret=".$this->clientSecret;
         $body .= "&redirect_uri=".$this->redirectUri();
@@ -123,14 +124,6 @@ abstract class OAuth2Provider implements Provider
         $url = $this->getUserDataUrl();
         $url .= "?access_token=".$this->accessToken;
         return $url;
-    }
-
-    protected function getAuthorizationCode()
-    {
-        if (! isset($this->request['code'])) {
-            throw new ApplicationRejectedException;
-        }
-        return $this->request['code'];
     }
 
     protected function parseJsonTokenResponse($response)
