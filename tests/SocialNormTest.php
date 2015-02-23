@@ -84,6 +84,9 @@ class SocialNormTest extends TestCase
         $this->assertEquals($authorizeUrl, $returnedUrl);
 
         // Simulate second request
+
+        // Maybe parse state out of the authorizeUrl here instead to be more
+        // "black box", nice tip by @davedevelopment
         $state = $session->get('oauth.state');
 
         $socialNorm = new SocialNorm(
