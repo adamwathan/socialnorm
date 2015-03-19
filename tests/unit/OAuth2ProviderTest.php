@@ -22,8 +22,8 @@ class OAuth2ProviderTest extends TestCase
     public function it_can_retrieve_a_normalized_user()
     {
         $client = $this->getStubbedHttpClient([
-            __DIR__ . '/fixtures/oauth2_accesstoken_response.txt',
-            __DIR__ . '/fixtures/oauth2_user_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_user_response.txt',
         ]);
 
         $provider = new GenericProvider([
@@ -49,8 +49,8 @@ class OAuth2ProviderTest extends TestCase
     public function it_fails_to_retrieve_a_user_when_the_authorization_code_is_omitted()
     {
         $client = $this->getStubbedHttpClient([
-            __DIR__ . '/fixtures/oauth2_accesstoken_response.txt',
-            __DIR__ . '/fixtures/oauth2_user_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_user_response.txt',
         ]);
 
         $provider = new GenericProvider([

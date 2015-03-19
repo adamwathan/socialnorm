@@ -1,6 +1,6 @@
 <?php
 
-use SocialNorm\State\StateGenerator;
+use SocialNorm\StateGenerator;
 
 class StateGeneratorTest extends TestCase
 {

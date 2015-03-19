@@ -1,4 +1,4 @@
-<?php namespace SocialNorm\State;
+<?php namespace SocialNorm;
 
 interface Session
 {

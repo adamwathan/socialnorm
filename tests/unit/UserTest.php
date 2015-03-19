@@ -26,22 +26,15 @@ class UserTest extends TestCase
     /** @test */
     public function properties_not_set_return_null()
     {
-        $details = new User([
-            'accessToken' => 'abc123',
-        ]);
+        $details = new User(['accessToken' => 'abc123']);
         $this->assertNull($details->id);
     }
 
     /** @test */
     public function test_can_retrieve_raw_details()
     {
-        $normalized = [
-            'accessToken' => 'abc123',
-        ];
-
-        $raw = [
-            'otherField' => 'foobar',
-        ];
+        $normalized = ['accessToken' => 'abc123'];
+        $raw = ['otherField' => 'foobar'];
 
         $details = new User($normalized, $raw);
         $this->assertEquals($raw, $details->raw());

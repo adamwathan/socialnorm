@@ -20,12 +20,12 @@ final class Request
         return new self($_REQUEST);
     }
 
-    public function verifyState($state)
+    public function state()
     {
         if (! isset($this->queryParams['state'])) {
-            return false;
+            return null;
         }
-        return $this->queryParams['state'] === $state;
+        return $this->queryParams['state'];
     }
 
     public function authorizationCode()
