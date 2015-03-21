@@ -35,7 +35,7 @@ abstract class OAuth2Provider implements Provider
         $this->clientSecret = $config['client_secret'];
         $this->redirectUri = $config['redirect_uri'];
         if (isset($config['scope'])) {
-            $this->scopes = array_merge($this->scopes, $config['scopes']);
+            $this->scopes = array_merge($this->scopes, $config['scope']);
         }
     }
 
