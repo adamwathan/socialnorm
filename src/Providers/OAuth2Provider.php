@@ -16,7 +16,7 @@ abstract class OAuth2Provider implements Provider
     protected $clientId;
     protected $clientSecret;
     protected $redirectUri;
-    protected $scopes = [];
+    protected $scope = [];
 
     protected $headers = [
         'authorize' => [],
@@ -35,7 +35,7 @@ abstract class OAuth2Provider implements Provider
         $this->clientSecret = $config['client_secret'];
         $this->redirectUri = $config['redirect_uri'];
         if (isset($config['scope'])) {
-            $this->scopes = array_merge($this->scopes, $config['scope']);
+            $this->scope = array_merge($this->scope, $config['scope']);
         }
     }
 
@@ -63,7 +63,7 @@ abstract class OAuth2Provider implements Provider
 
     protected function compileScopes()
     {
-        return implode(',', $this->scopes);
+        return implode(',', $this->scope);
     }
 
     public function getUser()
