@@ -5,25 +5,37 @@ use SocialNorm\OAuthManager;
 use SocialNorm\Request;
 use SocialNorm\Providers\OAuth2Provider;
 
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Subscriber\Mock as SubscriberMock;
 
 class OAuth2ProviderTest extends TestCase
 {
-    private function getStubbedHttpClient($responses = [])
+    private function getStubbedHttpClient($fixtures = [])
     {
-        $client = new HttpClient;
-        $mockSubscriber = new SubscriberMock($responses);
-        $client->getEmitter()->attach($mockSubscriber);
-        return $client;
+        $mock = new MockHandler($this->createResponses($fixtures));
+        $handler = HandlerStack::create($mock);
+        return new HttpClient(['handler' => $handler]);
+    }
+
+    private function createResponses($fixtures)
+    {
+        $responses = [];
+        foreach ($fixtures as $fixture) {
+            $response = require $fixture;
+            $responses[] = new Response($response['status'], $response['headers'], $response['body']);
+        }
+
+        return $responses;
     }
 
     /** @test */
     public function it_can_retrieve_a_normalized_user()
     {
         $client = $this->getStubbedHttpClient([
-            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.txt',
-            __DIR__ . '/../_fixtures/oauth2_user_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.php',
+            __DIR__ . '/../_fixtures/oauth2_user_response.php',
         ]);
 
         $provider = new GenericProvider([
@@ -49,8 +61,8 @@ class OAuth2ProviderTest extends TestCase
     public function it_fails_to_retrieve_a_user_when_the_authorization_code_is_omitted()
     {
         $client = $this->getStubbedHttpClient([
-            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.txt',
-            __DIR__ . '/../_fixtures/oauth2_user_response.txt',
+            __DIR__ . '/../_fixtures/oauth2_accesstoken_response.php',
+            __DIR__ . '/../_fixtures/oauth2_user_response.php',
         ]);
 
         $provider = new GenericProvider([
