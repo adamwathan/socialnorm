@@ -97,7 +97,7 @@ abstract class OAuth2Provider implements Provider
                 'body' => $this->buildAccessTokenPostBody(),
             ]);
         } catch (BadResponseException $e) {
-            throw new InvalidAuthorizationCodeException((string) $e->getResponse());
+            throw new InvalidAuthorizationCodeException((string) $e->getResponse()->getBody());
         }
         return $this->parseTokenResponse((string) $response->getBody());
     }
