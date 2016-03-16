@@ -4,7 +4,7 @@
  * @property-read string $accessToken
  * @property-read string $id
  * @property-read string $nickname
- * @property-read string $fullName
+ * @property-read string $full_name
  * @property-read string $imageUrl
  * @property-read string $email
  */
