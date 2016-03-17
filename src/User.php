@@ -1,11 +1,11 @@
 <?php namespace SocialNorm;
 
 /**
- * @property-read string $accessToken
+ * @property-read string $access_token
  * @property-read string $id
  * @property-read string $nickname
  * @property-read string $full_name
- * @property-read string $imageUrl
+ * @property-read string $image_url
  * @property-read string $email
  */
 class User
